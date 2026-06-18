@@ -3,17 +3,27 @@ pipeline {
 
     stages {
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Building Docker Image...'
-
                 sh 'docker build -t jenkins-demo:v1 .'
             }
         }
 
-        stage('Verify') {
+        stage('Remove Old Container') {
             steps {
-                sh 'docker images | grep jenkins-demo'
+                sh 'docker rm -f jenkins-demo || true'
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                sh 'docker run -d --name jenkins-demo -p 8081:80 jenkins-demo:v1'
+            }
+        }
+
+        stage('Verify Container') {
+            steps {
+                sh 'docker ps'
             }
         }
     }
